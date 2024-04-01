@@ -1,4 +1,6 @@
+/*
 import React, { useState, useEffect } from 'react';
+import selectedOption from './ImageContainer';
 
 const ImageComponent = () => {
   const [imageSrc, setImageSrc] = useState('');
@@ -27,7 +29,7 @@ const ImageComponent = () => {
         URL.revokeObjectURL(imageSrc);
       }
     };
-  }, [imageSrc]);
+  }, [imageSrc, selectedOption]);
 
   return (
     <div>
@@ -41,3 +43,6 @@ const ImageComponent = () => {
 };
 
 export default ImageComponent;
+
+
+ */

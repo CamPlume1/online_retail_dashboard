@@ -1,6 +1,46 @@
-import React, { useState } from 'react';
-import ImageComponent from './ImageComponent';
+import React, { useEffect, useState } from 'react';
 import '../ImageContainer.css'; // Import CSS file
+
+const ImageComponent = ({ selectedOption }) => {
+  const [imageSrc, setImageSrc] = useState('');
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/test_graphic/${selectedOption}`);
+        if (response.ok) {
+          const blob = await response.blob();
+          const imageUrl = URL.createObjectURL(blob);
+          setImageSrc(imageUrl);
+        } else {
+          console.error('Failed to fetch image:', response.status);
+        }
+      } catch (error) {
+        console.error('Error fetching image:', error);
+      }
+    };
+
+    fetchImage();
+
+    // Cleanup function to revoke the object URL when the component unmounts
+    return () => {
+      if (imageSrc) {
+        URL.revokeObjectURL(imageSrc);
+      }
+    };
+  }, [selectedOption]);
+
+  return (
+    <div>
+      {imageSrc ? (
+        <img src={imageSrc} alt="Test Graphic" />
+      ) : (
+        <p>Loading image...</p>
+      )}
+    </div>
+  );
+};
+
 
 const ImageContainer = () => {
   const [selectedOption, setSelectedOption] = useState('');
@@ -10,9 +50,8 @@ const ImageContainer = () => {
   };
 
   return (
-
     <div className="container">
-        <div className="header">
+      <div className="header">
         <h1>Graphic Description Here</h1>
       </div>
       <div className="dropdown-menu">
@@ -22,10 +61,11 @@ const ImageContainer = () => {
         </select>
       </div>
       <div className="image-grid-comp">
-        <ImageComponent customizationData={selectedOption} />
+        <ImageComponent selectedOption={selectedOption} />
       </div>
     </div>
   );
 };
 
 export default ImageContainer;
+
