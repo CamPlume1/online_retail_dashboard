@@ -1,5 +1,9 @@
 from io import BytesIO
+
+import matplotlib
 import matplotlib.pyplot as plt
+
+matplotlib.use('agg')
 import numpy as np
 
 
@@ -7,7 +11,7 @@ def gen_test_graphic() -> BytesIO:
     x = np.linspace(0, 10, 100)
     y = np.sin(x)
 
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=(6, 4))
     plt.plot(x, y)
     plt.xlabel('X-axis')
     plt.ylabel('Y-axis')
@@ -20,4 +24,3 @@ def gen_test_graphic() -> BytesIO:
     plt.close()
 
     return figfile
-

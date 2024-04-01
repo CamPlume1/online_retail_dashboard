@@ -1,23 +1,24 @@
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
+import ImageContainer from "./components/ImageContainer";
 
 function App() {
   return (
-    <div className="App">
+     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <h1>DS 4300: Retail Analytics App For Small Online Businesses</h1>
       </header>
+      <body className="App-body">
+        <div className="image-grid">
+          <ImageContainer />
+          <ImageContainer />
+          <ImageContainer />
+          <ImageContainer />
+        </div>
+      </body>
+      <footer className="App-footer">
+        <p>Created By: Cameron Plume, Nicholas Perrotta, Tom McDonagh, Reece Calvin, and Andrew Enelow</p>
+      </footer>
     </div>
   );
 }
