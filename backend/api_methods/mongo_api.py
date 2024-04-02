@@ -54,6 +54,8 @@ def spending_by_month_and_country():
     for month in month_data:
         month_data[month] = {country: amount for country, amount in month_data[month].items() if amount >= 0}
 
+    client.close()
+
     return month_data
 
 # Given the selected countires, vizualizes their spending by month
@@ -90,4 +92,19 @@ def visualize_spending(selected_countries):
     plt.close()
 
     return figfile
+
+
+
+def get_unique_countries() -> list[str]:
+    '''
+    Gets the unique countries
+    :return:
+    '''
+    client = MongoClient('localhost', 27017)
+    db = client['OnlineRetail']
+    collection = db['OnlineRetail']
+    unique_countries = collection.distinct('Country')
+    client.close()
+    return unique_countries
+
 
