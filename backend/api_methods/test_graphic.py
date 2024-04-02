@@ -20,7 +20,7 @@ def gen_test_graphic() -> BytesIO:
     # Save the plot to a BytesIO object
     figfile = BytesIO()
     plt.savefig(figfile, format='png')
-    figfile.seek(0)  # Move the cursor to the beginning of the BytesIO object
+    figfile.seek(0)
     plt.close()
 
     return figfile
