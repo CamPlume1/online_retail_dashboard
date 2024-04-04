@@ -7,7 +7,7 @@ const ImageComponent = ({ selectedOption }) => {
   useEffect(() => {
     const fetchImage = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/test_graphic/${selectedOption}`);
+        const response = await fetch(`http://localhost:5000/tom_graphic/${selectedOption}`);
         if (response.ok) {
           const blob = await response.blob();
           const imageUrl = URL.createObjectURL(blob);
@@ -33,7 +33,7 @@ const ImageComponent = ({ selectedOption }) => {
   return (
     <div>
       {imageSrc ? (
-        <img src={imageSrc} alt="Test Graphic" />
+        <img src={imageSrc} alt="Tom Graphic" />
       ) : (
         <p>Loading image...</p>
       )}

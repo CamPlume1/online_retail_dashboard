@@ -176,7 +176,7 @@ def gen_country_graphic(Country) -> BytesIO:
     if data.empty:
         return "Country Not Found"
     else:
-        plt.figure(figsize=(8, 6))
+        plt.figure(figsize=(6, 4))
         plt.bar(data['Month'], data['totalRevenue'], width=.8)
         # Add labels and title
         plt.xlabel('Month', fontsize=12)  # Adjust font size
