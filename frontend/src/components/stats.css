@@ -1,0 +1,11 @@
+.stats {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 50px;
+}
+
+.stat-item {
+    width: 33%;
+    margin-bottom: 20px;
+    color: #00bfff;
+}

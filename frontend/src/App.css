@@ -10,7 +10,7 @@
 
 
 .App-header {
-  background-color: slategray;
+  background-color: white;
   min-height: 20vh;
   display: flex;
   flex-direction: column;
@@ -21,5 +21,5 @@
 }
 
 .App-body {
-  background-color: slategray;
+  background-color: white;
 }

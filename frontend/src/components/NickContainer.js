@@ -7,7 +7,7 @@ const ImageComponent = ({ selectedOption }) => {
   useEffect(() => {
     const fetchImage = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/andrew_graphic/${selectedOption}`);
+        const response = await fetch(`http://localhost:5000/api/nick_graphic/${selectedOption}`);
         if (response.ok) {
           const blob = await response.blob();
           const imageUrl = URL.createObjectURL(blob);
@@ -42,7 +42,7 @@ const ImageComponent = ({ selectedOption }) => {
 };
 
 
-const ImageContainer = () => {
+const NickContainer = () => {
   const [selectedOption, setSelectedOption] = useState('');
   const [countries, setCountries] = useState([]);
 
@@ -71,7 +71,7 @@ const ImageContainer = () => {
   return (
     <div className="container">
       <div className="header">
-        <h1>Andrew's Graph Title</h1>
+        <h1>Nicks's Graph Title</h1>
       </div>
       <div className="visBox">
       <div className="dropdown-menu">
@@ -90,6 +90,4 @@ const ImageContainer = () => {
   );
 };
 
-export default ImageContainer;
-
-
+export default NickContainer;

@@ -42,7 +42,7 @@ const ImageComponent = ({ selectedOption }) => {
 };
 
 
-const ImageContainer = () => {
+const AndrewContainer = () => {
   const [selectedOption, setSelectedOption] = useState('');
   const [countries, setCountries] = useState([]);
 
@@ -90,6 +90,4 @@ const ImageContainer = () => {
   );
 };
 
-export default ImageContainer;
-
-
+export default AndrewContainer;
