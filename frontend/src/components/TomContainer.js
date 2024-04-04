@@ -49,7 +49,7 @@ const TomContainer = () => {
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/countries');
+        const response = await fetch('http://127.0.0.1:5000/api/countries');
         if (response.ok) {
           const data = await response.json();
           setCountries(data);

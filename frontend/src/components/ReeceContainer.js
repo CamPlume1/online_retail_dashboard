@@ -7,7 +7,7 @@ const ImageComponent = ({ selectedOption }) => {
   useEffect(() => {
     const fetchImage = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/reece_graphic/${selectedOption}`);
+        const response = await fetch(`http://127.0.0.1:5000/api/reece_graphic/${selectedOption}`);
         if (response.ok) {
           const blob = await response.blob();
           const imageUrl = URL.createObjectURL(blob);
@@ -49,7 +49,7 @@ const ReeceContainer = () => {
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/countries');
+        const response = await fetch('http://127.0.0.1:5000/api/countries');
         if (response.ok) {
           const data = await response.json();
           setCountries(data);
