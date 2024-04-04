@@ -10,15 +10,15 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 import numpy as np
 
-# Extracts data via mongo and returns a dictionary where each month lists the total spending by country 
+# Extracts data via mongo and returns a dictionary where each month lists the total spending by country
 def spending_by_month_and_country():
 
     # Connect to MongoDB
-    client = MongoClient('localhost', 27017) 
+    client = MongoClient('localhost', 27017)
     db = client['OnlineRetail']
     collection = db['OnlineRetail']
 
-    # Cypher Query 
+    # Cypher Query
     pipeline = [
         {"$project": {
             "Month": {"$month": "$InvoiceDate"},
@@ -34,7 +34,7 @@ def spending_by_month_and_country():
     # Runs cypher query
     results = collection.aggregate(pipeline)
 
-    # Generates Result in dataframe 
+    # Generates Result in dataframe
     data = pd.DataFrame(results)
 
     # Extract 'Month', 'Country', and 'TotalAmount' from '_id' field
@@ -69,12 +69,12 @@ def visualize_spending(selected_countries):
     # Extracts data via mongo and returns a dictionary where each month lists the total spending by country
     month_data = spending_by_month_and_country()
 
-    # Sort month_data by month 
+    # Sort month_data by month
     sorted_month_data = dict(sorted(month_data.items()))
 
     # Create the bar plot
-    fig, ax = plt.subplots(figsize=(16, 8)) 
-    width = 0.8 / len(sorted_month_data) 
+    fig, ax = plt.subplots(figsize=(16, 8))
+    width = 0.8 / len(sorted_month_data)
 
     # Iterate over the months and plot bars for each selected country
     for i, (month, country_data) in enumerate(sorted_month_data.items()):
@@ -86,7 +86,7 @@ def visualize_spending(selected_countries):
     ax.set_ylabel('Total Amount Spent (USD)')
     ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x))))
     ax.set_title('Online Retail Spending by Month and Country')
-    ax.set_xticks([i + 0.4 for i in range(len(selected_countries))]) 
+    ax.set_xticks([i + 0.4 for i in range(len(selected_countries))])
     ax.set_xticklabels(selected_countries)
     ax.legend()
 
@@ -114,13 +114,13 @@ def get_unique_countries() -> list[str]:
 
 def get_data(Country):
        # Connect to MongoDB
-    client = MongoClient('localhost', 27017) 
+    client = MongoClient('localhost', 27017)
     db = client['OnlineRetail']
     collection = db['OnlineRetail']
     pipeline = [
         {
             '$match': {
-            'Country': Country,  
+            'Country': Country,
             '$expr': { '$eq': [{ '$year': "$InvoiceDate" }, 2011] }
             }
         },
@@ -142,15 +142,15 @@ def get_data(Country):
         ]
 
     # Query the dataset
-    result = list(collection.aggregate(pipeline))  
+    result = list(collection.aggregate(pipeline))
 
-    
+
     result = pd.DataFrame(result)
     result['Month'] = result['_id'].apply(number_to_month)
     return result
 
-    
-    
+
+
 def number_to_month(number):
     months = [
         'January', 'February', 'March', 'April',
@@ -158,7 +158,7 @@ def number_to_month(number):
         'September', 'October', 'November', 'December'
     ]
     return months[number - 1]
-    
+
 
 def linear_regression(X,y):
     model = LinearRegression()
@@ -166,16 +166,16 @@ def linear_regression(X,y):
     predictions = model.predict(X)
 
     return predictions
-    
-    
+
+
 def gen_country_graphic(Country) -> BytesIO:
 
     data = get_data(Country)
 
-    
+
     if data.empty:
         return "Country Not Found"
-    else:            
+    else:
         plt.figure(figsize=(8, 6))
         plt.bar(data['Month'], data['totalRevenue'], width=.8)
         # Add labels and title
@@ -189,15 +189,15 @@ def gen_country_graphic(Country) -> BytesIO:
         # Set the custom formatter for y-axis tick labels
         plt.gca().yaxis.set_major_formatter(FuncFormatter(format_func))
         # Display the plot
-        plt.tight_layout() 
-            
+        plt.tight_layout()
+
         if data.shape[0] > 1:
             x = np.array(data.index.values.reshape(-1,1))
             y = linear_regression(x, data['totalRevenue'].values)
             plt.plot(data.index.values, y, linestyle='dashed', color='blue', linewidth=2.5)
-        
-        
-        
+
+
+
 
         # Save the plot to a BytesIO object
         figfile = BytesIO()
@@ -210,7 +210,62 @@ def gen_country_graphic(Country) -> BytesIO:
 
 
 
+def best_selling_products(year) -> BytesIO:
+    client = MongoClient('localhost', 27017)
+    db = client['OnlineRetail']
+    collection = db['OnlineRetail']
 
+    # Da Query
+    pipeline = [
+        {
+            '$match': {
+                '$expr': { '$eq': [{ '$year': "$InvoiceDate" }, year] }
+            }
+        },
+        {
+            '$project': {
+                'Description': 1,
+                'Quantity': 1
+            }
+        },
+        {
+            '$group': {
+                '_id': "$Description",
+                'TotalQuantity': { '$sum': "$Quantity" }
+            }
+        },
+        {
+            '$sort': { "TotalQuantity": -1 }
+        },
+        {
+            '$limit': 10
+        }
+    ]
+    # Runs query
+    results = collection.aggregate(pipeline)
 
+    # Store Result
+    data = pd.DataFrame(results)
 
+    # Plot results
+    fig, ax = plt.subplots(figsize=(16, 8))
+
+    # Plot the results part II
+    ax.bar(data['_id'], data['TotalQuantity'])
+
+    # Add labels and title
+    ax.set_xlabel('Product Description')
+    ax.set_ylabel('Total Quantity Sold')
+    ax.set_title('Top 10 Best Selling Products')
+
+    # Rotate x-axis to look fancy
+    plt.xticks(rotation=70)
+
+    # Save the plot
+    figfile = BytesIO()
+    plt.savefig(figfile, format='png')
+    figfile.seek(0)
+    plt.close()
+
+    return figfile
 

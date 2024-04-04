@@ -5,6 +5,7 @@ from api_methods.test_graphic import gen_test_graphic
 import matplotlib
 from api_methods.mongo_api import visualize_spending
 from api_methods.mongo_api import gen_country_graphic
+from api_methods.mongo_api import best_selling_products
 
 matplotlib.use('agg')
 
@@ -41,6 +42,11 @@ def test_tom_graphic() -> Response:
     else:
 
         return Response(figure, mimetype="image/png")
+
+@app.route('/api/reece_graphic/')
+def reece_graphic_endpoint() -> Response:
+    figure = best_selling_products(2011)
+    return Response(figure, mimetype="image/png")
 
 
 
