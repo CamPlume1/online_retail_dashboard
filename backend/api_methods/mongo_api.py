@@ -2,8 +2,13 @@
 from io import BytesIO
 
 import pandas as pd
-import matplotlib.pyplot as plt
 from pymongo import MongoClient
+from sklearn.linear_model import LinearRegression
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
+import numpy as np
 
 # Extracts data via mongo and returns a dictionary where each month lists the total spending by country 
 def spending_by_month_and_country():
@@ -106,5 +111,106 @@ def get_unique_countries() -> list[str]:
     unique_countries = collection.distinct('Country')
     client.close()
     return unique_countries
+
+def get_data(Country):
+       # Connect to MongoDB
+    client = MongoClient('localhost', 27017) 
+    db = client['OnlineRetail']
+    collection = db['OnlineRetail']
+    pipeline = [
+        {
+            '$match': {
+            'Country': Country,  
+            '$expr': { '$eq': [{ '$year': "$InvoiceDate" }, 2011] }
+            }
+        },
+        {
+            '$project': {
+            'month': { '$month': "$InvoiceDate" },
+            'revenue': { '$multiply': ["$UnitPrice", "$Quantity"] }
+            }
+        },
+        {
+            '$group': {
+            '_id': "$month" ,
+            'totalRevenue': { '$sum': "$revenue" }
+            }
+        },
+        {
+            '$sort': { "_id": 1 }
+        }
+        ]
+
+    # Query the dataset
+    result = list(collection.aggregate(pipeline))  
+
+    
+    result = pd.DataFrame(result)
+    result['Month'] = result['_id'].apply(number_to_month)
+    return result
+
+    
+    
+def number_to_month(number):
+    months = [
+        'January', 'February', 'March', 'April',
+        'May', 'June', 'July', 'August',
+        'September', 'October', 'November', 'December'
+    ]
+    return months[number - 1]
+    
+
+def linear_regression(X,y):
+    model = LinearRegression()
+    model.fit(X.reshape(-1,1), y)
+    predictions = model.predict(X)
+
+    return predictions
+    
+    
+def gen_country_graphic(Country) -> BytesIO:
+
+    data = get_data(Country)
+
+    
+    if data.empty:
+        return "Country Not Found"
+    else:            
+        plt.figure(figsize=(8, 6))
+        plt.bar(data['Month'], data['totalRevenue'], width=.8)
+        # Add labels and title
+        plt.xlabel('Month', fontsize=12)  # Adjust font size
+        plt.ylabel('Amount Spent', fontsize=12)  # Adjust font size
+        plt.title('Amount Spent in ' + Country + ' (2011)', fontsize=14)  # Adjust font size
+        # Rotate x-axis labels if needed
+        plt.xticks(rotation=70)  # Rotate labels by 45 degrees
+        def format_func(value, tick_number):
+            return f'{value/1:.0f}'
+        # Set the custom formatter for y-axis tick labels
+        plt.gca().yaxis.set_major_formatter(FuncFormatter(format_func))
+        # Display the plot
+        plt.tight_layout() 
+            
+        if data.shape[0] > 1:
+            x = np.array(data.index.values.reshape(-1,1))
+            y = linear_regression(x, data['totalRevenue'].values)
+            plt.plot(data.index.values, y, linestyle='dashed', color='blue', linewidth=2.5)
+        
+        
+        
+
+        # Save the plot to a BytesIO object
+        figfile = BytesIO()
+        plt.savefig(figfile, format='png')
+        figfile.seek(0)  # Move the cursor to the beginning of the BytesIO object
+        plt.clf()
+        plt.close()
+
+        return figfile
+
+
+
+
+
 
 
