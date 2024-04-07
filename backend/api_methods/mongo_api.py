@@ -86,7 +86,7 @@ def plot_country_spending(specified_countries):
     df = pd.DataFrame(data).T
 
     # Vizualization
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=(6, 4))
 
     # Plot data for each country that is apart of the specified list 
     for country in specified_countries:
