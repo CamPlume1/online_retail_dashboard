@@ -224,7 +224,7 @@ def best_selling_products(year) -> BytesIO:
     db = client['OnlineRetail']
     collection = db['OnlineRetail']
 
-    # Da Query
+    # Query
     pipeline = [
         {
             '$match': {
@@ -270,9 +270,9 @@ def best_selling_products(year) -> BytesIO:
     # Rotate x-axis to look fancy
     # plt.xticks(rotation=70)
 
-    # Put the total quantity in each bar
+    plt.xticks(data['_id'], rotation=90)
     for i, v in enumerate(data['TotalQuantity']):
-        ax.text(i, v, str(v), ha='center', va='bottom', c='white')
+        ax.text(i, v, str(v), color='black', ha='center')
 
     # Save the plot
     figfile = BytesIO()
