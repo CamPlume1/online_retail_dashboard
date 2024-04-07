@@ -10,15 +10,15 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 import numpy as np
 
-# Extracts data via mongo and returns a dictionary where each month lists the total spending by country 
+# Extracts data via mongo and returns a dictionary where each month lists the total spending by country
 def spending_by_month_and_country():
 
     # Connect to MongoDB
-    client = MongoClient('localhost', 27017) 
+    client = MongoClient('localhost', 27017)
     db = client['OnlineRetail']
     collection = db['OnlineRetail']
 
-    # Cypher Query 
+    # Cypher Query
     pipeline = [
         {"$project": {
             "Month": {"$month": "$InvoiceDate"},
@@ -34,7 +34,7 @@ def spending_by_month_and_country():
     # Runs cypher query
     results = collection.aggregate(pipeline)
 
-    # Generates Result in dataframe 
+    # Generates Result in dataframe
     data = pd.DataFrame(results)
 
     # Extract 'Month', 'Country', and 'TotalAmount' from '_id' field
@@ -55,10 +55,10 @@ def spending_by_month_and_country():
         else:
             month_data[month][country] += amount
 
-    # Sort month_data by month 
+    # Sort month_data by month
     month_data = dict(sorted(month_data.items()))
 
-    # Changes month from number to the month's actual name  
+    # Changes month from number to the month's actual name
     month_sales = {}
     month_sales['January'] = month_data.get(1)
     month_sales['February'] = month_data.get(2)
@@ -88,12 +88,12 @@ def plot_country_spending(specified_countries):
     # Vizualization
     plt.figure(figsize=(6, 4))
 
-    # Plot data for each country that is apart of the specified list 
+    # Plot data for each country that is apart of the specified list
     for country in specified_countries:
         if country in df.columns:
             plt.plot(df.index, df[country], label=country)
 
-    # Add labels, title, and legend 
+    # Add labels, title, and legend
     plt.xlabel('Month')
     plt.ylabel('Amount Spent')
     plt.title('Amount Spent by Country per Month')
@@ -268,7 +268,11 @@ def best_selling_products(year) -> BytesIO:
     ax.set_title('Top 10 Best Selling Products')
 
     # Rotate x-axis to look fancy
-    plt.xticks(rotation=70)
+    # plt.xticks(rotation=70)
+
+    # Put the total quantity in each bar
+    for i, v in enumerate(data['TotalQuantity']):
+        ax.text(i, v, str(v), ha='center', va='bottom', c='white')
 
     # Save the plot
     figfile = BytesIO()
