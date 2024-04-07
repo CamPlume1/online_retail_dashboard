@@ -10,15 +10,15 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 import numpy as np
 
-# Extracts data via mongo and returns a dictionary where each month lists the total spending by country
+# Extracts data via mongo and returns a dictionary where each month lists the total spending by country 
 def spending_by_month_and_country():
 
     # Connect to MongoDB
-    client = MongoClient('localhost', 27017)
+    client = MongoClient('localhost', 27017) 
     db = client['OnlineRetail']
     collection = db['OnlineRetail']
 
-    # Cypher Query
+    # Cypher Query 
     pipeline = [
         {"$project": {
             "Month": {"$month": "$InvoiceDate"},
@@ -34,7 +34,7 @@ def spending_by_month_and_country():
     # Runs cypher query
     results = collection.aggregate(pipeline)
 
-    # Generates Result in dataframe
+    # Generates Result in dataframe 
     data = pd.DataFrame(results)
 
     # Extract 'Month', 'Country', and 'TotalAmount' from '_id' field
@@ -55,40 +55,51 @@ def spending_by_month_and_country():
         else:
             month_data[month][country] += amount
 
-    # Remove any country with negative amount for each month
-    for month in month_data:
-        month_data[month] = {country: amount for country, amount in month_data[month].items() if amount >= 0}
+    # Sort month_data by month 
+    month_data = dict(sorted(month_data.items()))
+
+    # Changes month from number to the month's actual name  
+    month_sales = {}
+    month_sales['January'] = month_data.get(1)
+    month_sales['February'] = month_data.get(2)
+    month_sales['March'] = month_data.get(3)
+    month_sales['April'] = month_data.get(4)
+    month_sales['May'] = month_data.get(5)
+    month_sales['June'] = month_data.get(6)
+    month_sales['July'] = month_data.get(7)
+    month_sales['August'] = month_data.get(8)
+    month_sales['September'] = month_data.get(9)
+    month_sales['October'] = month_data.get(10)
+    month_sales['November'] = month_data.get(11)
+    month_sales['December'] = month_data.get(12)
 
     client.close()
 
-    return month_data
+    return month_sales
+
 
 # Given the selected countires, vizualizes their spending by month
-def visualize_spending(selected_countries):
+def plot_country_spending(specified_countries):
 
-    # Extracts data via mongo and returns a dictionary where each month lists the total spending by country
-    month_data = spending_by_month_and_country()
+    # Gets cypher queried data as a dictionary and coverst to a data frame
+    data = spending_by_month_and_country()
+    df = pd.DataFrame(data).T
 
-    # Sort month_data by month
-    sorted_month_data = dict(sorted(month_data.items()))
+    # Vizualization
+    plt.figure(figsize=(12, 8))
 
-    # Create the bar plot
-    fig, ax = plt.subplots(figsize=(6, 4))
-    width = 0.8 / len(sorted_month_data)
+    # Plot data for each country that is apart of the specified list 
+    for country in specified_countries:
+        if country in df.columns:
+            plt.plot(df.index, df[country], label=country)
 
-    # Iterate over the months and plot bars for each selected country
-    for i, (month, country_data) in enumerate(sorted_month_data.items()):
-        selected_country_data = {country: amount for country, amount in country_data.items() if country in selected_countries}
-        x = [j + i * width for j in range(len(selected_country_data))]
-        ax.bar(x, selected_country_data.values(), width, label=f'Month {month}')
-
-    ax.set_xlabel('Country')
-    ax.set_ylabel('Total Amount Spent (USD)')
-    ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x))))
-    ax.set_title('Online Retail Spending by Month and Country')
-    ax.set_xticks([i + 0.4 for i in range(len(selected_countries))])
-    ax.set_xticklabels(selected_countries)
-    ax.legend()
+    # Add labels, title, and legend 
+    plt.xlabel('Month')
+    plt.ylabel('Amount Spent')
+    plt.title('Amount Spent by Country per Month')
+    plt.legend()
+    plt.xticks(rotation=45)
+    plt.tight_layout()
 
     # Save the plot to a BytesIO object
     figfile = BytesIO()
@@ -97,8 +108,6 @@ def visualize_spending(selected_countries):
     plt.close()
 
     return figfile
-
-
 
 def get_unique_countries() -> list[str]:
     '''
