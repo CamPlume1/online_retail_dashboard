@@ -2,7 +2,7 @@ from flask import Flask, Response
 from flask_cors import CORS  # Import CORS from flask_cors module
 from api_methods.component_calls import cam_test
 import matplotlib
-from api_methods.mongo_api import visualize_spending, gen_time_series_graphic, get_unique_countries
+from api_methods.mongo_api import plot_country_spending, gen_time_series_graphic, get_unique_countries
 from api_methods.mongo_api import gen_country_graphic
 from api_methods.mongo_api import best_selling_products
 
@@ -25,7 +25,7 @@ def cam_endpoint() -> str:
 
 @app.route('/api/nick_graphic/')
 def nick_graphic_endpoint() -> Response:
-    return Response(visualize_spending(["Norway", "United Kingdom", "France", "Germany", "Australia"]), mimetype="image/png")
+    return Response(plot_country_spending(["Norway", "United Kingdom", "France", "Germany", "Australia"]), mimetype="image/png")
 
 @app.route('/tom_graphic/')
 def test_tom_graphic() -> Response:
