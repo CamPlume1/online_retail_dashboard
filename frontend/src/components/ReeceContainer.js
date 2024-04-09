@@ -7,7 +7,7 @@ const ImageComponent = ({ selectedOption }) => {
   useEffect(() => {
     const fetchImage = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:5000/api/reece_graphic/${selectedOption}`);
+        const response = await fetch(`http://127.0.0.1:5000/api/reece_graphic/?year=${selectedOption}`);
         if (response.ok) {
           const blob = await response.blob();
           const imageUrl = URL.createObjectURL(blob);
@@ -43,13 +43,13 @@ const ImageComponent = ({ selectedOption }) => {
 
 
 const ReeceContainer = () => {
-  const [selectedOption, setSelectedOption] = useState('');
+  const [selectedOption, setSelectedOption] = useState('2011');
   const [countries, setCountries] = useState([]);
 
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:5000/api/countries');
+        const response = await fetch('http://127.0.0.1:5000/years/');
         if (response.ok) {
           const data = await response.json();
           setCountries(data);
@@ -76,7 +76,7 @@ const ReeceContainer = () => {
       <div className="visBox">
       <div className="dropdown-menu">
         <select value={selectedOption} onChange={handleOptionChange}>
-          <option value="">Select a country</option>
+          <option value="">Select a year</option>
           {countries.map(country => (
       <option key={country} value={country}>{country}</option>
     ))}

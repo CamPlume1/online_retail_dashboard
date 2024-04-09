@@ -78,6 +78,13 @@
   margin-top: 20px;
   width: 20%;
 }
+.multiple-drop {
+  margin-top: 20px;
+  width: 20%;
+  color: deepskyblue;
+  display: flex;
+  margin-bottom: 20px;
+}
 
 .image-container {
   margin-right: 0px;

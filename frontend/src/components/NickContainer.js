@@ -7,7 +7,7 @@ const ImageComponent = ({ selectedOption }) => {
   useEffect(() => {
     const fetchImage = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:5000/api/nick_graphic/${selectedOption}`);
+        const response = await fetch(`http://127.0.0.1:5000/api/nick_graphic/?countries=${selectedOption}`);
         if (response.ok) {
           const blob = await response.blob();
           const imageUrl = URL.createObjectURL(blob);
@@ -43,7 +43,7 @@ const ImageComponent = ({ selectedOption }) => {
 
 
 const NickContainer = () => {
-  const [selectedOption, setSelectedOption] = useState('');
+  const [selectedOption, setSelectedOption] = useState([]);
   const [countries, setCountries] = useState([]);
 
   useEffect(() => {
@@ -65,18 +65,19 @@ const NickContainer = () => {
   }, []);
 
   const handleOptionChange = (event) => {
-    setSelectedOption(event.target.value);
+    const selectedOptionsArray = Array.from(event.target.selectedOptions, option => option.value);
+    setSelectedOption(selectedOptionsArray);
   };
 
   return (
     <div className="container">
       <div className="header">
-        <h1>Nicks's Graph Title</h1>
+        <h1>Comparison of Annual Sales Across Regions</h1>
       </div>
       <div className="visBox">
-      <div className="dropdown-menu">
-        <select value={selectedOption} onChange={handleOptionChange}>
-          <option value="">Select a country</option>
+      <div className="multiple-drop">
+        <select multiple value={selectedOption} onChange={handleOptionChange}>
+          <option value={selectedOption}>Select Multiple Countries</option>
           {countries.map(country => (
       <option key={country} value={country}>{country}</option>
     ))}
