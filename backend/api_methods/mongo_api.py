@@ -189,7 +189,7 @@ def gen_country_graphic(Country) -> BytesIO:
         plt.bar(data['Month'], data['totalRevenue'], width=.8)
         # Add labels and title
         plt.xlabel('Month', fontsize=12)  # Adjust font size
-        plt.ylabel('Amount Spent', fontsize=12)  # Adjust font size
+        plt.ylabel('Amount Spent ($)', fontsize=12)  # Adjust font size
         plt.title('Amount Spent in ' + Country + ' (2011)', fontsize=14)  # Adjust font size
         # Rotate x-axis labels if needed
         plt.xticks(rotation=70)  # Rotate labels by 45 degrees
